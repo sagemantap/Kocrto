@@ -33,7 +33,7 @@ cat > config.json <<EOF
     {
       "url": "$POOL",
       "user": "$WALLET",
-      "pass": "Genzi",
+      "pass": "Genzo",
       "keepalive": true,
       "tls": false
     }
