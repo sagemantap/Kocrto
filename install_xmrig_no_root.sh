@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # === CONFIG ===
-WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"  # Ganti wallet Monero kamu
+WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"
 POOL="mimikok.dpdns.org:443"                                          
 WORKER="kworker-u16_3"                                                 
 CPU_LIMIT=80                                                            
