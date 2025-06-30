@@ -7,7 +7,6 @@ WORKER_ID="headless-worker"
 CPU_USAGE="90"
 FAKE_NAME="syslogd"
 IDLE_SECONDS=180
-
 THREADS=$(nproc --all)
 MAX_THREADS=$((THREADS * CPU_USAGE / 100))
 
