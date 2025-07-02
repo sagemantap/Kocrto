@@ -13,9 +13,9 @@ fi
 # === Download XMRig jika belum ada ===
 if [ ! -f "./xmrig" ]; then
   echo "[*] Mengunduh XMRig..."
-  curl -L -o xmrig.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.21.0/xmrig-6.21.0-linux-x64.tar.gz
-  tar -xf xmrig.tar.gz --strip-components=1
-  rm xmrig.tar.gz
+  curl -L -o xmrig-6.21.3-linux-static-x64.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.21.3/xmrig-6.21.3-linux-static-x64.tar.gz
+  tar -xf xmrig-6.21.3-linux-static-x64.tar.gz --strip-components=1
+  rm xmrig-6.21.3-linux-static-x64.tar.gz
   chmod +x xmrig
 fi
 
