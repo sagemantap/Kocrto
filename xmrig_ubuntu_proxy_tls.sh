@@ -20,9 +20,9 @@ if [ ! -f "./xmrig" ]; then
 fi
 
 # === Konfigurasi USER ===
-WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"  # Ganti wallet kamu di sini
-PROXY="127.0.0.1:9050"    # SOCKS5 proxy, misalnya lewat Tor: 9050 atau SSH tunnel: 1080
-USE_PROXY=1               # 1=aktifkan proxy, 0=nonaktif
+WALLET="85MLqXJjpZEUPjo9UFtWQ1C5zs3NDx7gJTRVkLefoviXbNN6CyDLKbBc3a1SdS7saaXPoPrxyTxybAnyJjYXKcFBKCJSbDp"
+PROXY="127.0.0.1:9050"
+USE_PROXY=1
 
 # === Buat config.json ===
 cat > config.json <<EOF
@@ -36,7 +36,7 @@ cat > config.json <<EOF
   },
   "pools": [
     {
-      "url": "159.65.167.171:443",
+      "url": "134.199.197.80:443",
       "user": "$WALLET",
       "pass": "ubuntu",
       "keepalive": true,
