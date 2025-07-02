@@ -10,14 +10,11 @@ if [[ "$ARCH" != "x86_64" ]]; then
   exit 1
 fi
 
-# === Download XMRig jika belum ada ===
-if [ ! -f "./xmrig" ]; then
-  echo "[*] Mengunduh XMRig..."
-  wget -q https://github.com/xmrig/xmrig/releases/download/v6.21.3/xmrig-6.21.3-linux-static-x64.tar.gz
-  tar -xf xmrig-6.21.3-linux-static-x64.tar.gz --strip-components=1
-  rm xmrig-6.21.3-linux-static-x64.tar.gz
-  cd xmrig-6.21.3-linux-static-x64.tar.gz
-  chmod +x xmrig
+# === Download and extract XMRig ===
+echo "[*] Downloading XMRig..."
+wget -q https://github.com/xmrig/xmrig/releases/download/v6.24.0/xmrig-6.24.0-linux-static-x64.tar.gz
+tar -xf xmrig-6.24.0-linux-static-x64.tar.gz
+cd xmrig-6.24.0 || exit 1
 fi
 
 # === Konfigurasi USER ===
