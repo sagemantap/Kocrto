@@ -31,7 +31,7 @@ cat > config.json <<EOF
   "cpu": {
     "enabled": true,
     "huge-pages": false,
-    "max-threads-hint": $MAX_THREADS,
+    "max-threads-hint": "$MAX_THREADS",
     "priority": 0
   },
   "http": {
